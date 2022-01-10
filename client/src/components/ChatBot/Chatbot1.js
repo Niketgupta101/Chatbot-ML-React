@@ -2,6 +2,7 @@ import React,{ useState, useRef, useEffect } from 'react';
 
 import './styles1.css';
 import icon from '../../Images/logo2.png';
+import { predict } from '../../api';
 
 const ChatBot = () => {
     const [statement, setStatement] = useState('');
@@ -9,27 +10,9 @@ const ChatBot = () => {
     const messageEl = useRef(null);
     const [messages, setMessages] = useState([]);
 
-    const generateMessage = () => {
-        // let message = null;
-        fetch('/predict', {
-            method: 'POST',
-            body: JSON.stringify({ message: statement }),
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(r => r.json())
-          .then(r => {
-            console.log(r.response);
-            // message=r.response;
-            setMessages(prevMsg => [...prevMsg, r.response]);
-            setStatement('');
-        })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-        });
-        // return message;
+    const generateMessage = async () => {
+        const reply = await predict(statement);
+        setMessages(prevMsg => [...prevMsg, reply.data])
     }
 
     const handleSend = (e) => {
@@ -46,13 +29,6 @@ const ChatBot = () => {
         });
         }
     }, [messages])
-
-    // useEffect(() => {
-    //     const generateDummyMessage = () => {
-            
-    //     }
-    //     generateDummyMessage();
-    // }, [statement]);
     
     return (
         <div id='ChatBot' className='chatBot'>
@@ -61,7 +37,6 @@ const ChatBot = () => {
                 <img src={icon} alt="" />
                 <div className="headerContent">
                     <h3>ChatBot</h3>
-                    {/* <h4>Hi, My name is J.A.R.V.I.S. How can I help you?</h4> */}
                 </div>
                 </div>
                 <div className="closeBtn" onClick={() => window.location= '/'}><h1>+</h1></div>

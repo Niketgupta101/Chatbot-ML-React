@@ -16,7 +16,7 @@ class BotModel(nn.Module):
             self.hidden_layer = nn.ModuleList(layers)
 
             for f in self.hidden_layer:
-                y = f.apply(init_weights)
+                f.apply(init_weights)
 
         self.final_layer = nn.Linear(hidden_dim, output_dim)
         self.input_layer.apply(init_weights)

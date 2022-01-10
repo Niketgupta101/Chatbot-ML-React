@@ -1,0 +1,101 @@
+.About{
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+}
+.About>h1{
+    /* margin-top: 2rem; */
+    font-size: 40px;
+    color: #fff;
+}
+.aboutContent{
+    width: 70%;
+    box-sizing: border-box;
+    margin: 1.5rem 0;
+}
+.person{
+    width: 93%;
+    display: flex;
+    min-height: 37vh;
+    margin: 2rem 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: rgba(6, 31, 255, 0.116);
+    box-shadow: -6px -6px 6px 1px rgba(0, 0, 0, 0.205);
+}
+.photo{
+    margin: auto;
+    padding: 0.5rem;
+    flex-basis: auto;
+    display: flex;
+}
+.photo>img{
+    width: 32vh;
+    border: 3px solid #fff;
+    box-shadow: -0.4rem -0.4rem 0 rgba(3, 3, 19, 0.308);
+}
+.photo>div{
+    position: relative;
+}
+.photo>.upperBox{
+    width: 17vh;
+    height: 17vh;
+    background-color: rgb(67, 67, 250);
+    /* position: absolute; */
+    top: -1rem;
+    left: -1rem;
+    z-index: 99;
+}
+.lowerBox{
+    width: 17vh;
+    height: 17vh;
+    background-color: rgb(67, 67, 250);
+    /* position: absolute; */
+    bottom: -1rem;
+    right: -1rem;
+}
+.personInfo{
+    flex-basis: 70%;
+    padding: 1rem;
+}
+.personInfo>h3{
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0.5rem;
+    overflow-y: hidden;
+}
+.personInfo>h3>a{
+    width: 40px;
+    box-sizing: border-box;
+    text-decoration: none;
+    margin: 0;
+}
+.links{
+    width: 36px;
+    position: relative;
+    top: 8px;
+    margin: 0 0.5rem;
+}
+.personInfo>h3>span{
+    font-weight: 800;
+    padding: 0 0.5rem 0 0;
+}
+
+@media(max-width: 600px)
+{
+    .aboutContent{
+        width: 90%;
+    }
+    .photo{
+        width: 70vw;
+    }
+    .person{
+        padding: 1rem 0;
+    }
+    .personInfo{
+        flex-basis: 100%;
+    }
+}

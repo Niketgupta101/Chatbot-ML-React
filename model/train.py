@@ -44,9 +44,9 @@ class train_my_bot(object):
     X_TRAIN = None
     Y_TRAIN = None
 
-    def initialize_hyperparams(bot, param_file):
-        with open(param_file, 'r') as f:
-            params = json.load(f)
+    def initialize_hyperparams(bot, params):
+        # with open(param_file, 'r') as f:
+            # params = json.load(f)
 
         bot.BATCH_SIZE = params["BatchSize"]
         bot.LR = params["LearningRate"]
@@ -60,26 +60,29 @@ class train_my_bot(object):
         print("Model Loaded")
         return bot.model
 
-    def prepare_data(bot, user_id, data_file):
-        with open(data_file, 'r') as f:
-            train_file = json.load(f)
+    def prepare_data(bot, data_file):
+        # with open(data_file, 'r') as f:
+            # train_file = json.load(f)
         word_dict = []
         tags = []
         label = []
-        for info in train_file[user_id]:
-            tag = info['tag']
+        for tag in data_file:
+            # tag = info['tag']
             tags.append(tag)
-            for pattern in info['patterns']:
+            for pattern in data_file[tag]['patterns']:
                 words = tokenize(pattern)
                 word_dict.extend(words)
                 label.append((words, tag))
         remove_chars = ['?', '!', '.']
         word_dict = sorted(set([stem(word) for word in word_dict if word not in remove_chars]))
         tags = sorted(set(tags))
-
+        # print(tags)
         X_train = []
         Y_train = []
+        # print(label)
         for pattern, tag in label:
+            # print(pattern, tag)
+            # print('-'*100)
             bow = bag_of_words(pattern, word_dict)
             
             X_train.append(bow)
@@ -87,17 +90,21 @@ class train_my_bot(object):
 
         X_train = np.array(X_train)
         Y_train = np.array(Y_train)
+        # print(X_train)
+        # print(Y_train)
         return (X_train, Y_train, tags, word_dict)
 
-    def train(bot, user_id, data, param):
+    
+    def train(bot, userID, data, param):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         
 
-        bot.X_TRAIN, bot.Y_TRAIN, bot.tags, word_dict = bot.prepare_data(user_id, data)
+        bot.X_TRAIN, bot.Y_TRAIN, bot.tags, word_dict = bot.prepare_data(data)
         dataset = ChatBotDataset(bot.X_TRAIN, bot.Y_TRAIN)
         
         bot.model = bot.initialize_hyperparams(param).to(device)
+        # print(bot.BATCH_SIZE,'************************************************')
         train_loader = DataLoader(dataset, batch_size=bot.BATCH_SIZE, shuffle=True)
 
         criterion = nn.CrossEntropyLoss()
@@ -107,6 +114,8 @@ class train_my_bot(object):
 
         avg_loss = 0
         count = 0
+        print('starting training')
+        torch.autograd.set_detect_anomaly(True)
         for epoch in range(bot.N_EPOCHS):
             for word, label in train_loader:
                 optimizer.zero_grad()
@@ -120,8 +129,9 @@ class train_my_bot(object):
                 # print(output.shape)
                 # print(label)
                 loss = criterion(output, label)
+                optimizer.zero_grad()
 
-                loss.backward()
+                loss.backward(retain_graph = True)
                 optimizer.step()
                 # scheduler.step()
                 avg_loss += loss.item()
@@ -138,4 +148,4 @@ class train_my_bot(object):
                         "Tags": bot.tags,
                         "Final Loss": loss.item()}
 
-        torch.save(save_model, "Model Weights/weight1.pth")
+        torch.save(save_model, "Model Weights/"+userID+".pth")

@@ -13,18 +13,6 @@ const saveUserList = (data) => {
     fs.writeFileSync(dataPath, stringifyData);
 }
 
-const dataPath1= './model/Data/intent.json';
-
-const getDataList = () => {
-    const jsonData = fs.readFileSync(dataPath1);
-
-    return JSON.parse(jsonData);
-}
-const saveDataList = (data) => {
-    const stringifyData = JSON.stringify(data);
-    fs.writeFileSync(dataPath1, stringifyData);
-}
-
 export const getUsers = async (req,res) => {
     try {
         const userList = getUserList();
@@ -70,13 +58,8 @@ export const signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 12);
 
         const result = { id:id, firstName: firstName, lastName: lastName, emailId:emailId, password:hashedPassword};
-        console.log(result);
         userList.push(result);
         saveUserList(userList);
-
-        const dataList = getDataList();
-        dataList[id]=[];
-        saveDataList(dataList);
 
         const token = jwt.sign({ emailId: emailId, id: id}, 'test', { expiresIn: "1h" });
 

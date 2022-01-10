@@ -1,35 +1,27 @@
-import React,{ useState, useEffect } from 'react';
-import { submitParams } from '../../api';
+import React,{ useState } from 'react';
+import { submitParams, trainModel } from '../../api';
 import Loading from '../Loading/Loading';
-import { useDispatch, useSelector } from 'react-redux';
 
 import './styles.css';
-import { UPDATE } from '../../constants/actionTypes';
 
 const Train = () => {
     const user = JSON.parse(localStorage.getItem('profile'));
     const [isLoading, setIsLoading] = useState(false);
-    const vars = useSelector(state => state.Vars);
-    console.log(vars)
-
-    const dispatch = useDispatch();
 
     const defaultParams = {
         BatchSize : 16,
         LearningRate : 0.002,
         NumberOfEpochs : 1500,
         NeuronsInHiddenLayer : 16,
-        DepthOfModel: 13,
-        SavedWeights: "./Model Weights/weight1.pth"
+        DepthOfModel: 4,
     };
     
     const [customParams, setCustomParams] = useState({
-        BatchSize : undefined,
-        LearningRate : undefined,
-        NumberOfEpochs : undefined,
-        NeuronsInHiddenLayer : undefined,
-        DepthOfModel: undefined,
-        SavedWeights: "./Model Weights/weight1.pth"
+        BatchSize : '',
+        LearningRate : '',
+        NumberOfEpochs : '',
+        NeuronsInHiddenLayer : '',
+        DepthOfModel: '',
     });
 
     const handleSubmit = async (e) => {
@@ -38,25 +30,21 @@ const Train = () => {
         await submitParams(defaultParams);
         else
         await submitParams(customParams);
-        setIsLoading(true);
 
-        fetch('/train', {
-            method: 'POST',
-            body: JSON.stringify({ id: vars.dataId }),
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(r => {console.log(r);setIsLoading(false); dispatch({type: UPDATE, payload: { dataId: vars.dataId, isTrained: true }});})
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-        });
+        console.log("submitted");
+        setIsLoading(true);
+        await trainModel(user?.result.id);
+        // console.log(data);
+        setIsLoading(false);
+        // window.location='/';
     }
-    useEffect(() => {
-        if(vars.isTrained)
-        window.location='/';
-    }, [vars.isTrained])
+
+    const onFormFieldChange = (e) => {
+        setCustomParams({
+          ...customParams,
+          [e.target.name]: e.target.value 
+        })
+     }
 
     const handleDefaultParam = () => {
         const cb = document.getElementById('dataId');
@@ -71,7 +59,6 @@ const Train = () => {
         }
         else
         {
-            // dispatch({type: UPDATE, payload: { dataId: user?.result.Id, isTrained:store.isTrained }});
             document.getElementById('batchsize').disabled = false;
             document.getElementById('rate').disabled = false;
             document.getElementById('epoch').disabled = false;
@@ -90,20 +77,20 @@ const Train = () => {
             <form className='hyperParameters'onSubmit={handleSubmit}>
                 <div className="input">
                     <label htmlFor="batchSize">Batch Size</label>
-                    <input type="number" id='batchsize' value={customParams.BatchSize} onChange={(e) => setCustomParams({...customParams, BatchSize:e.target.value})} required />
+                    <input name='BatchSize' type="number" id='batchsize' value={customParams.BatchSize} onChange={onFormFieldChange} required />
                 </div>
                 <div className="input">
                     <label htmlFor="batchSize">Learning Rate</label>
-                    <input type="text" id='rate' value={customParams.LearningRate} onChange={(e) => setCustomParams({...customParams, LearningRate:e.target.value})} required/>
+                    <input name='LearningRate' type="number" id='rate' value={customParams.LearningRate} onChange={onFormFieldChange} required/>
                 </div><div className="input">
                     <label htmlFor="batchSize">No. of Epochs</label>
-                    <input type="text" id="epoch" value={customParams.NumberOfEpochs} onChange={(e) => setCustomParams({...customParams, NumberOfEpochs:e.target.value})} required />
+                    <input name='NumberOfEpochs' type="number" id="epoch" value={customParams.NumberOfEpochs} onChange={onFormFieldChange} required />
                 </div><div className="input">
                     <label htmlFor="batchSize">Neurons in hidden layer</label>
-                    <input type="text" id="layer" value={customParams.NeuronsInHiddenLayer} onChange={(e) => setCustomParams({...customParams, NeuronsInHiddenLayer:e.target.value})} required />
+                    <input name='NeuronsInHiddenLayer' type="number" id="layer" value={customParams.NeuronsInHiddenLayer} onChange={onFormFieldChange} required />
                 </div><div className="input">
                     <label htmlFor="batchSize">Depth of model</label>
-                    <input type="text" id="depth" value={customParams.DepthOfModel} onChange={(e) => setCustomParams({...customParams, DepthOfModel:e.target.value})} required />
+                    <input name='DepthOfModel' type="number" id="depth" value={customParams.DepthOfModel} onChange={onFormFieldChange} required />
                 </div>
                 <label htmlFor="default" className='checkBox'>
                     <input type="checkbox" id="dataId" name="default" value="yes" onClick={handleDefaultParam}/> Use Default Params

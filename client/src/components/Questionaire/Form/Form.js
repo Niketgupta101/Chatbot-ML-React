@@ -1,55 +1,33 @@
 import React,{ useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { UPDATE } from '../../../constants/actionTypes';
 
 import './styles.css';
 
-const Form = ({ formData, setFormData, store }) => {
+const Form = ({ formData, setFormData, tags, setTags }) => {
     const [formItem, setFormItem] = useState({tag:'', pattern:'', response:''});
-    const user = JSON.parse(localStorage.getItem('profile'));
 
     const handleAddItem = () => {
-        const data = formData;
-        var flag = false;
-        data.map((item) => (item?.tag === formItem.tag) && (
-            (formItem.pattern !==null) && (item.patterns = item.patterns.filter(i => i!==formItem.pattern)),
-            (formItem.response !==null) && (item.responses = item.responses.filter(i => i!==formItem.response))    
-        ));
-        data.filter((item) => (item.patterns.length!==0 || item.responses.length!==0));
-        data.map((item) => (item?.tag===formItem.tag) && (
-            (formItem.pattern !== null) && item.patterns.push(formItem.pattern),
-            (formItem.response !== null) && item.responses.push(formItem.response),
-            flag=true
-        )
-        );
-        (flag===false && formItem.tag!==null) && data.push({tag: formItem.tag, patterns: [formItem.pattern], responses: [formItem.response]});
-        setFormData(data);
-        setFormData([...formData]);
-    }
+        const { tag, pattern, response } = formItem;
+        
+        var tagList = tags;
+        tagList = tagList.filter(i => i!==tag);
+        tagList.push(tag);
+        setTags(tagList);
 
-    const dispatch = useDispatch();
-
-    const handleDefaultData = () => {
-        const cb = document.getElementById('dataId');
-        if(cb.checked)
+        var data = formData[tag];
+        if(data === undefined)
         {
-            dispatch({type: UPDATE, payload: { dataId:"1", isTrained:store.isTrained }});
-            document.getElementById('select').disabled = true;
-            document.getElementById('category').disabled = true;
-            document.getElementById('statement').disabled = true;
-            document.getElementById('reply').disabled = true;
-            document.getElementById('addItem').disabled=true;
+            data={
+                patterns: [],
+                responses: []
+            }
+        }
+        data.patterns = data.patterns.filter((item) => (item !== pattern));
+        data.patterns.push(pattern);
 
-        }
-        else
-        {
-            dispatch({type: UPDATE, payload: { dataId: user?.result.Id, isTrained:store.isTrained }});
-            document.getElementById('select').disabled = false;
-            document.getElementById('category').disabled = false;
-            document.getElementById('statement').disabled = false;
-            document.getElementById('reply').disabled = false;
-            document.getElementById('addItem').disabled = false;
-        }
+        data.responses = data.responses.filter((item) => (item !== response));
+        data.responses.push(response);
+        formData[tag]=data;
+        setFormData({...formData});
     }
 
     return (
@@ -81,9 +59,6 @@ const Form = ({ formData, setFormData, store }) => {
                 <input type="text" id='reply' value={formItem.response} onChange={(e) => setFormItem({...formItem, response: e.target.value})}/>
             </div>
             </div>
-            <label htmlFor="default" className='checkBox'>
-                <input type="checkbox" id="dataId" name="default" onClick={handleDefaultData}/> Use Default Dataset
-            </label>
             <button className="addItem" id='addItem' onClick={handleAddItem}>Add</button>
         </div>
     )

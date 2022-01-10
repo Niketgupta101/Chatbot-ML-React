@@ -1,18 +1,20 @@
 import express from 'express';
-import bodyParser from 'body-parser';
+import DataRoutes from './routes/DataRoutes.js';
+import UserRoutes from './routes/UserRoutes.js';
+import modelRoutes from './routes/modelRoutes.js';
+import dotenv from 'dotenv';
 
 const app = express(); 
+dotenv.config();
 
 import cors from 'cors';
 app.use(cors());
 
-app.use(bodyParser.json({ limit: "30mb", extended: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.use(express.json());
 
-import DataRoutes from './routes/DataRoutes.js';
-import UserRoutes from './routes/UserRoutes.js';
 app.use('/data', DataRoutes);
 app.use('/users', UserRoutes);
+app.use('/model', modelRoutes);
 
 const PORT = process.env.PORT || 8000;
 

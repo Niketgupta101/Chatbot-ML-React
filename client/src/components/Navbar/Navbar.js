@@ -23,7 +23,7 @@ const Navbar = () => {
     }
 
     const handleMenuBar = () => {
-        setMenuBar(prev => (prev==='0vw') ? '70vw':'0vw')
+        setMenuBar(prev => (prev==='0vw') ? '355px':'0vw')
     }
 
     useEffect(() => {
@@ -44,12 +44,12 @@ const Navbar = () => {
                 <h1>ChatBot</h1><img src={logo} alt="logo" className='logo'/>
             </div>
             <div className='rightbar'>
-            {user?.result ? (
+            {/* {user?.result ? (
                 <><div className="user">
                     <img src={avatar} alt="" />
                     <h3>Hi, {user.result.firstName} {user.result.lastName}</h3>
                 </div><button className='btn-secondary' onClick={logout}>Logout</button></>):
-            (<Link to='/auth'><button className='btn-secondary'>Login</button></Link>)}
+            (<Link to='/auth'><button className='btn-secondary'>Login</button></Link>)} */}
             </div>
             <div className='menuBar' style={{width:menuBar}}>
             <div className="close" onClick={handleMenuBar}><h1 className='close'>+</h1></div>
@@ -60,16 +60,16 @@ const Navbar = () => {
             </div>
             <div className="menu">
                 <Link to='/' onClick={handleMenuBar}>&rarr; Home</Link>
-                <Link to='/about' onClick={handleMenuBar}>&rarr; About</Link>
-                <Link to='/Questionaire' onClick={handleMenuBar}>&rarr; Questionaire</Link>
+                <Link to='/Questionaire' onClick={handleMenuBar}>&rarr; Create Dataset</Link>
+                <Link to='/trainModel' onClick={handleMenuBar}>&rarr; Train Model</Link>
+                <Link to='/Chatbot' onClick={handleMenuBar}>&rarr; Let's Chat</Link>
+                <Link to='/aboutPage' onClick={handleMenuBar}>&rarr; About Us</Link>
             </div>
             <div className="signInUp">
                 {user?.result ? (<button className='btn-secondary1' onClick={logout}>Logout</button>):(<Link to='/auth'><button className='btn-secondary1' onClick={handleMenuBar}>Login</button></Link>)}
             </div>
             </div>
-            <div className="hamburger" onClick={handleMenuBar}><div className="bar"></div>
-            <div className="bar"></div>
-            <div className="bar"></div></div>
+            <div className="hamburger" onClick={handleMenuBar}><div className="bar" /><div className="bar" /><div className="bar" /></div>
         </div>
     )
 }

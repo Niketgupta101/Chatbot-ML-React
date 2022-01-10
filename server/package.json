@@ -5,14 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "server": "nodemon server.js --ignore client",
-    "client": "cd model && flask run",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "server": "node index.js",
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.1",
     "concurrently": "^6.5.1",

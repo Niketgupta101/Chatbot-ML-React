@@ -10,12 +10,12 @@ class talk_my_bot(object):
     weight = None
     intentions = None
     word_dict = None
-    def initialize_hyperparams(bot, param_file):
-        with open(param_file, 'r') as f:
-            params = json.load(f)
+    def initialize_hyperparams(bot,userID, params):
+        # with open(param_file, 'r') as f:
+            # params = json.load(f)
         bot.HIDDEN_DIM = params["NeuronsInHiddenLayer"]
         bot.N_LAYERS = params["DepthOfModel"]
-        bot.weight = torch.load(params["SavedWeights"])
+        bot.weight = torch.load("Model Weights/"+userID+".pth")
         bot.OUTPUT_DIM = bot.weight["Output Dim"]
         bot.INPUT_DIM = bot.weight["Input Dim"]
         bot.word_dict = bot.weight["Word Dictionary"]
@@ -27,11 +27,11 @@ class talk_my_bot(object):
             bot.model.load_state_dict(bot.weight["model_state"])
         return bot.model
 
-    def prepare_to_chat(bot, user_id, dataset, param_file):
-        with open(dataset, 'r') as f:
-            train_file = json.load(f)
-        bot.intentions = train_file[user_id]
-        bot.initialize_hyperparams(param_file)
+    def prepare_to_chat(bot,userID, dataset, param_file):
+        # with open(dataset, 'r') as f:
+            # train_file = json.load(f)
+        bot.intentions = dataset
+        bot.initialize_hyperparams(userID, param_file)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         bot.model = bot.load_model().to(device)
         bot.model.eval()
@@ -50,15 +50,18 @@ class talk_my_bot(object):
         x = x.reshape(1, x.shape[0])
         x = torch.from_numpy(x)
 
+        # print(bot.intentions)
         output = bot.model(x)
         _, idx = torch.max(output, dim=1)
         tag = bot.tags[idx.item()]
-
+        print(bot.tags)
         prob = torch.softmax(output, dim=1)
         prob = prob[0][idx.item()]
-        if prob>0.77:
-            for intent in bot.intentions:
-                if tag==intent["tag"]:
-                    return random.choice(intent["responses"])
+        print(prob)
+        if prob>0:
+            # for intent in bot.intentions:
+            #     print(tag)
+            #     if tag==intent:
+            return random.choice(bot.intentions[tag]["responses"])
         else:
             return random.choice(default_answer)

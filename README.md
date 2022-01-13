@@ -18,4 +18,4 @@ Step 2: Train your bot with suitable hyperparameters. Training will take approxi
 Step 3: Once the bot is trained, you can converse with your ChatBot.
 
 ## How to access?
-You can access the chatbot from : https://diy-chatbot.netlify.app/
+You can access the chatbot from : [DIY-Chatbot](https://diy-chatbot.netlify.app/)
